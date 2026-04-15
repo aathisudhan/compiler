@@ -1,0 +1,12 @@
+Flask==3.0.0
+flask-cors==4.0.0
+firebase-admin==6.4.0
+requests==2.31.0
+pandas==2.2.0
+numpy==1.26.0
+python-dotenv==1.0.0
+gunicorn==21.2.0
+pytz==2024.1
+Pillow==10.2.0
+# Only include if you use image processing for student records
+opencv-python-headless==4.9.0.80
