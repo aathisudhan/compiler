@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <style>
+        body { background: #0a0a0a; color: #00ffcc; font-family: 'Courier New', monospace; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; }
+        .neon-box { border: 2px solid #00ffcc; padding: 20px; box-shadow: 0 0 10px #00ffcc; width: 300px; text-align: center; }
+        input { background: #222; border: 1px solid #00ffcc; color: #fff; padding: 10px; margin: 5px; width: 80%; }
+        button { background: #00ffcc; color: #000; border: none; padding: 10px 20px; cursor: pointer; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="neon-box">
+        <h2>PEC COMPILER LOGIN</h2>
+        <input type="text" id="userid" placeholder="Roll No or Email">
+        <input type="password" id="pass" placeholder="Password">
+        <button onclick="handleLogin()">ENTER PORTAL</button>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/10.x.x/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.x.x/firebase-auth-compat.js"></script>
+    <script>
+        const firebaseConfig = { /* YOUR_FIREBASE_CONFIG */ };
+        firebase.initializeApp(firebaseConfig);
+
+        async function handleLogin() {
+            const id = document.getElementById('userid').value;
+            const pass = document.getElementById('pass').value;
+            // Send to your Flask API defined in main.py
+            const response = await fetch('/login', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({email: id, password: pass, is_student: true})
+            });
+            const data = await response.json();
+            if(data.success) window.location.href = '/';
+        }
+    </script>
+</body>
+</html>
