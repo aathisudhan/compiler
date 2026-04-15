@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        .admin-section { padding: 20px; border: 1px solid #ff00ff; }
+    </style>
+</head>
+<body>
+    <div class="admin-section">
+        <h2>Admin Management</h2>
+        <input type="text" id="q_input" placeholder="Testcase Input">
+        <input type="text" id="q_output" placeholder="Expected Output">
+        <button onclick="addQuestion()">SAVE QUESTION TO DB</button>
+    </div>
+
+    <script>
+        function addQuestion() {
+            const input = document.getElementById('q_input').value;
+            const output = document.getElementById('q_output').value;
+            // Use Firebase to write to your Compiler/Questions path
+            fetch('/api/admin/save_question', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({input, output})
+            }).then(() => alert("Saved!"));
+        }
+    </script>
+</body>
+</html>
