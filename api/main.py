@@ -5,7 +5,7 @@ from datetime import datetime
 from flask import Flask, request, jsonify, session
 from flask_cors import CORS
 import firebase_admin
-from firebase_admin import credentials, db, auth
+from firebase_admin import credentials, db
 from functools import wraps
 
 # 1. INITIALIZE APP (Top-Level)
@@ -13,18 +13,16 @@ app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY", "PEC_VECTOR_GATE_2026_SECURE")
 CORS(app)
 
-# 2. FIREBASE INIT (Handles empty/missing env vars safely)
-firebase_info = os.getenv("FIREBASE_JSON")
-db_url = os.getenv("FIREBASE_DB_URL")
-
-if firebase_info and db_url:
-    try:
-        if not firebase_admin._apps:
+# 2. LAZY INITIALIZATION HELPER (Prevents build-time crashes)
+def get_firebase_app():
+    if not firebase_admin._apps:
+        firebase_info = os.getenv("FIREBASE_JSON")
+        db_url = os.getenv("FIREBASE_DB_URL")
+        if firebase_info and db_url:
             cred_dict = json.loads(firebase_info)
             cred = credentials.Certificate(cred_dict)
             firebase_admin.initialize_app(cred, {'databaseURL': db_url})
-    except Exception as e:
-        print(f"Firebase Init Error: {e}")
+    return firebase_admin.get_app()
 
 # 3. HELPERS
 def get_ist_now():
@@ -34,7 +32,7 @@ def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if 'uid' not in session:
-            return jsonify({"success": False, "message": "Login required"}), 401
+            return jsonify({"success": False, "message": "Unauthorized"}), 401
         return f(*args, **kwargs)
     return decorated_function
 
@@ -47,6 +45,9 @@ def index():
 @login_required
 def submit_code():
     from api.compiler import run_code
+    
+    # Initialize Firebase on-demand
+    get_firebase_app()
     
     data = request.get_json()
     code = data.get('code', '')
@@ -80,11 +81,10 @@ def submit_code():
     
     return jsonify({"output": output, "error": error, "marks": marks})
 
-# 5. ADMIN ROUTE
 @app.route('/api/admin/save_question', methods=['POST'])
 @login_required
 def save_question():
-    # Add check for Admin role here if needed
+    get_firebase_app()
     data = request.get_json()
     q_id = data.get('q_id')
     db.reference(f'Compiler/Questions/{q_id}').set(data)
