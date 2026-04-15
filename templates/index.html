@@ -1,38 +1,31 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
     <style>
-        body { background: #0a0a0a; color: #00ffcc; font-family: 'Courier New', monospace; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; }
-        .neon-box { border: 2px solid #00ffcc; padding: 20px; box-shadow: 0 0 10px #00ffcc; width: 300px; text-align: center; }
-        input { background: #222; border: 1px solid #00ffcc; color: #fff; padding: 10px; margin: 5px; width: 80%; }
-        button { background: #00ffcc; color: #000; border: none; padding: 10px 20px; cursor: pointer; font-weight: bold; }
+        body { background: #0a0a0a; color: #00ffcc; font-family: sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; }
+        .box { border: 2px solid #00ffcc; padding: 30px; box-shadow: 0 0 20px #00ffcc; width: 350px; }
+        input, button { display: block; width: 100%; margin: 10px 0; padding: 10px; background: #222; border: 1px solid #00ffcc; color: #fff; }
+        button { cursor: pointer; background: #00ffcc; color: #000; font-weight: bold; }
     </style>
 </head>
 <body>
-    <div class="neon-box">
-        <h2>PEC COMPILER LOGIN</h2>
-        <input type="text" id="userid" placeholder="Roll No or Email">
+    <div class="box">
+        <h2>PORTAL LOGIN</h2>
+        <input type="text" id="userid" placeholder="Roll No">
         <input type="password" id="pass" placeholder="Password">
-        <button onclick="handleLogin()">ENTER PORTAL</button>
+        <button onclick="login()">LOGIN</button>
     </div>
 
-    <script src="https://www.gstatic.com/firebasejs/10.x.x/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.x.x/firebase-auth-compat.js"></script>
     <script>
-        const firebaseConfig = { /* YOUR_FIREBASE_CONFIG */ };
-        firebase.initializeApp(firebaseConfig);
-
-        async function handleLogin() {
+        async function login() {
             const id = document.getElementById('userid').value;
-            const pass = document.getElementById('pass').value;
-            // Send to your Flask API defined in main.py
-            const response = await fetch('/login', {
+            const res = await fetch('/login', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({email: id, password: pass, is_student: true})
+                body: JSON.stringify({email: id, role: 'student'})
             });
-            const data = await response.json();
-            if(data.success) window.location.href = '/';
+            const data = await res.json();
+            if(data.success) alert("Logged In!");
         }
     </script>
 </body>
